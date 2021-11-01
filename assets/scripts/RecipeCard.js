@@ -3,6 +3,8 @@ class RecipeCard extends HTMLElement {
     // Part 1 Expose - TODO
 
     // You'll want to attach the shadow DOM here
+    super();
+    this.attachShadow({mode: 'open'});
   }
 
   set data(data) {
@@ -18,7 +20,6 @@ class RecipeCard extends HTMLElement {
       a {
         text-decoration: none;
       }
-
       a:hover {
         text-decoration: underline;
       }
@@ -34,7 +35,6 @@ class RecipeCard extends HTMLElement {
         padding: 0 16px 16px 16px;
         width: 178px;
       }
-
       div.rating {
         align-items: center;
         column-gap: 5px;
@@ -47,7 +47,6 @@ class RecipeCard extends HTMLElement {
         object-fit: scale-down;
         width: 78px;
       }
-
       article > img {
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
@@ -56,7 +55,6 @@ class RecipeCard extends HTMLElement {
         margin-left: -16px;
         width: calc(100% + 32px);
       }
-
       p.ingredients {
         height: 32px;
         line-height: 16px;
@@ -67,7 +65,6 @@ class RecipeCard extends HTMLElement {
       p.organization {
         color: black !important;
       }
-
       p.title {
         display: -webkit-box;
         font-size: 16px;
@@ -77,7 +74,6 @@ class RecipeCard extends HTMLElement {
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
       }
-
       p:not(.title), span, time {
         color: #70757A;
         font-size: 12px;
@@ -100,6 +96,86 @@ class RecipeCard extends HTMLElement {
     // created in the constructor()
 
     // Part 1 Expose - TODO
+    const page_img = document.createElement('img');
+    const url = searchForKey(data, 'thumbnailUrl');
+    page_img.setAttribute('src', url);
+    const page_line = searchForKey(data, 'headline');
+    page_img.setAttribute('alt', page_line);
+    card.appendChild(page_img);
+
+    const p_page = document.createElement('p');
+    const a_page = document.createElement('a');
+    p_page.setAttribute('class','title');
+    const a_url = getUrl(data);
+    a_page.setAttribute('href', a_url);
+    a_page.textContent = page_line;
+    p_page.appendChild(a_page);
+    card.append(p_page);
+
+    const p_org = document.createElement('p');
+    p_org.setAttribute('class', 'organization');
+    const org_data = getOrganization(data);
+    p_org.textContent = org_data;
+    card.appendChild(p_org);
+
+    const rating = document.createElement('div');
+    rating.setAttribute('class', 'rating');
+    const value = searchForKey(data, 'ratingValue');
+    const review = document.createElement('span');
+    if(value == null){
+      review.textContent = "No Reviews";
+    }
+    else{
+      review.textContent = value;
+      const num_stars = Math.round(value);
+      const stars_img = document.createElement('img');
+      if(num_stars == 0){
+        stars_img.setAttribute('src', '/assets/images/icons/0-star.svg');
+        stars_img.setAttribute('alt', '0 stars');
+      }
+      if(num_stars == 1){
+        stars_img.setAttribute('src', '/assets/images/icons/1-star.svg');
+        stars_img.setAttribute('alt', '1 stars');
+      }
+      if(num_stars == 2){
+        stars_img.setAttribute('src', '/assets/images/icons/2-star.svg');
+        stars_img.setAttribute('alt', '2 stars');
+      }
+      if(num_stars == 3){
+        stars_img.setAttribute('src', '/assets/images/icons/3-star.svg');
+        stars_img.setAttribute('alt', '3 stars');
+      }
+      if(num_stars == 4){
+        stars_img.setAttribute('src', '/assets/images/icons/4-star.svg');
+        stars_img.setAttribute('alt', '4 stars');
+      }
+      if(num_stars == 5){
+        stars_img.setAttribute('src', '/assets/images/icons/0-star.svg');
+        stars_img.setAttribute('alt', '5 stars');
+      }
+      rating.appendChild(stars_img);
+      const num_review = document.createElement('span');
+      const rating_count = searchForKey(data, 'ratingCount');
+      num_review.textContent = rating_count;
+      rating.appendChild(num_review);
+    }
+    rating.appendChild(review);
+    
+    const recipe_time = document.createElement('time');
+    const total_time = searchForKey(data, 'totalTime');
+    const time = convertTime(total_time);
+    recipe_time.textContent = time;
+    card.appendChild(recipe_time);
+
+    const ingredient_list = document.createElement('p');
+    ingredient_list.setAttribute('class', 'ingredients');
+    const ingredient_content = searchForKey(data, 'recipeIngredient');
+    const ingredient_content_list = createIngredientList(ingredient_content);
+    ingredient_list.textContent = ingredient_content_list;
+    card.appendChild(ingredient_list);
+
+    this.shadowRoot.appendChild(styleElem);
+    this.shadowRoot.appendChild(card);
   }
 }
 
